@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+dist/
+*.mkp
+*.zip
+*.log
+*.pem
+*.key
+.env
+.env.*
+*token*.txt
+*diagnostic*.txt
+*api_dump*
+.DS_Store
