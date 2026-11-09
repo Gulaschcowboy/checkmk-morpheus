@@ -1,0 +1,6 @@
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+src/morpheus/libexec/agent_morpheus text eol=lf
+*.mkp binary
+*.zip binary
