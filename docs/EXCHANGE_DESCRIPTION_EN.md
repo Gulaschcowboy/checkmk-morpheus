@@ -1,6 +1,6 @@
 # HPE Morpheus Monitoring
 
-Read-only HPE Morpheus REST API monitoring for Checkmk 2.4.
+Read-only HPE Morpheus REST API monitoring for Checkmk 2.4, 2.5 and 3.0.
 
 ## Features
 
@@ -18,7 +18,7 @@ Read-only HPE Morpheus REST API monitoring for Checkmk 2.4.
 
 ## Compatibility
 
-Targets Checkmk 2.4. Integration environment: Checkmk 2.4.0p26 CME and Morpheus 9.1.0.1 with HVM. Other editions/providers/versions require validation; Checkmk 2.5 compatibility is not claimed. The exact 1.1.0 publication archive has local unit/public-API validation; verify live behavior in a test site.
+Targets Checkmk 2.4. Integration environment: Checkmk 2.4.0p26 CME and Morpheus 9.1.0.1 with HVM. The package can be installed up to Checkmk 3.0 (usable before 3.1.0); it was installed and exercised on a Checkmk 3.0.0 daily build against a mock Morpheus API. Checkmk 2.5 and other editions/providers/versions require validation. The exact 1.1.0 publication archive has local unit/public-API validation; verify live behavior in a test site.
 
 ## Configuration
 

@@ -32,7 +32,7 @@ def main():
         'author': 'Pawel Wladzinski <pawel.wladzinski@vayana.pl>',
         'description': 'Read-only Morpheus 9.1 API collector, health checks, datastores, multipath, clusters, hypervisors, hardware and VM piggyback; opt-in snapshots, API volumes, alarms, licenses and virtual-switch configuration. Configure credentials and discover services.',
         'download_url': args.download_url, 'version.packaged': '2.4.0',
-        'version.min_required': '2.4.0', 'version.usable_until': '2.5.0',
+        'version.min_required': '2.4.0', 'version.usable_until': '3.1.0',
         'files': {'cmk_addons_plugins': files},
     }
     inner = io.BytesIO()

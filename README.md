@@ -14,12 +14,13 @@ This is an independent community integration. It is not an official HPE or Check
 
 | Component | Scope |
 | --- | --- |
-| Checkmk | 2.4; package minimum 2.4.0, usable before 2.5.0 |
-| Observed Checkmk environment | 2.4.0p26 CME |
+| Checkmk | 2.4, 2.5 and 3.0; package minimum 2.4.0, usable before 3.1.0 |
+| Observed Checkmk environment | 2.4.0p26 CME; 3.0.0 (daily build) with a mock Morpheus API (installation, discovery, all services) |
 | Morpheus API environment | 9.1.0.1 |
 | Provider exercised in the deployment | Morpheus HVM |
 | VMware inventory | Sample-data coverage; no claim of full live provider validation |
-| Checkmk 2.5 / other Morpheus versions | Not validated |
+| Checkmk 2.5 | Uses only the public plugin APIs that are also available in 2.4 and 3.0; not validated live with this release |
+| Other Morpheus versions | Not validated |
 
 Release 1.1.0 adds per-VM power services and power and snapshot overviews on the API source host, alongside opt-in checks for snapshots, volumes, alarms, licenses, and virtual switch configuration. The release was validated locally against the public Checkmk 2.4 plugin APIs. Verify installation and discovery on the target site.
 
