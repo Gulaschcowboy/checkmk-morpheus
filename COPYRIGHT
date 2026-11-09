@@ -1,0 +1,14 @@
+Copyright (c) 2026 Pawel Wladzinski <pawel.wladzinski@vayana.pl>
+
+Project sources in release 1.1.0 are distributed under GPL-2.0-only.
+See LICENSE for the full text. The installed MKP includes morpheus/COPYING.
+
+Earlier releases through 1.0.3 were distributed with MIT notices. The
+publication of this release does not revoke permissions previously granted
+for those earlier archives.
+
+Python and Checkmk are runtime dependencies, not vendored in this source
+distribution. Their own licenses and notices apply to those dependencies.
+
+HPE, Morpheus and Checkmk names identify compatible third-party products.
+This independent community project is not endorsed by their vendors.

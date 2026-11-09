@@ -1,0 +1,681 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-2.0-only
+# Copyright (c) 2026 Pawel Wladzinski <pawel.wladzinski@vayana.pl>
+"""Read-only Morpheus collector. Stdlib only; no upstream config/secrets in output."""
+import argparse
+import hashlib
+import os
+import tempfile
+from collections import Counter
+from pathlib import Path
+from datetime import datetime
+import json
+import math
+import re
+import ssl
+import sys
+import time
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlencode, urlsplit
+from urllib.request import Request, build_opener, HTTPSHandler, HTTPRedirectHandler
+
+VERSION = '1.1.0'
+
+class CollectionError(Exception):
+    pass
+
+class NoRedirect(HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+def pick(obj, keys):
+    return {k: obj[k] for k in keys if k in obj and not isinstance(obj[k], (dict, list))}
+
+def numeric(value):
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+class API:
+    def __init__(self, url, token, insecure=False, timeout=20, budget=50):
+        parsed = urlsplit(url)
+        if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in ('', '/'):
+            raise CollectionError('URL must be https://hostname[:port] without path or credentials')
+        if not token or '\n' in token or '\r' in token:
+            raise CollectionError('Invalid or empty API token')
+        self.url, self.token = url.rstrip('/'), token
+        root = os.environ.get('OMD_ROOT')
+        identity = hashlib.sha256((self.url + '\0' + token).encode()).hexdigest()
+        self.hardware_cache = HardwareCache(Path(root) / 'var/check_mk/morpheus_hardware' / identity) if root else None
+        self.vm_stats_cache = VMStatsCache(Path(root) / 'var/check_mk/morpheus_vm_stats' / identity) if root else None
+        self.timeout, self.deadline = timeout, time.monotonic() + budget
+        context = ssl._create_unverified_context() if insecure else ssl.create_default_context()
+        self.opener = build_opener(NoRedirect(), HTTPSHandler(context=context))
+
+    def get(self, endpoint, **query):
+        remaining = self.deadline - time.monotonic()
+        if remaining <= 0:
+            raise CollectionError('Collection time budget exceeded')
+        path = '/api/' + endpoint
+        req = Request(self.url + path + ('?' + urlencode(query) if query else ''),
+                      headers={'Authorization': 'Bearer ' + self.token, 'Accept': 'application/json'})
+        try:
+            with self.opener.open(req, timeout=min(self.timeout, remaining)) as response:
+                # Bound memory even for a malfunctioning endpoint.
+                raw = response.read(32 * 1024 * 1024 + 1)
+                if len(raw) > 32 * 1024 * 1024:
+                    raise CollectionError(path + ': response exceeds 32 MiB')
+                obj = json.loads(raw)
+        except HTTPError as exc:
+            raise CollectionError(f'{path}: HTTP {exc.code} (check token, permissions or URL)') from None
+        except (URLError, TimeoutError, OSError):
+            raise CollectionError(path + ': connection/TLS/timeout failure') from None
+        except (ValueError, UnicodeError):
+            raise CollectionError(path + ': invalid JSON') from None
+        if not isinstance(obj, dict) or obj.get('success') is False:
+            raise CollectionError(path + ': API reported failure or invalid object')
+        return obj
+
+    def listing(self, endpoint, key, **filters):
+        result, ids, offset = [], set(), 0
+        for _ in range(1000):
+            obj = self.get(endpoint, max=100, offset=offset, **filters)
+            rows = obj.get(key)
+            meta = obj.get('meta')
+            if not isinstance(rows, list) or not isinstance(meta, dict):
+                raise CollectionError(endpoint + ': missing list or pagination metadata')
+            for row in rows:
+                if not isinstance(row, dict) or row.get('id') is None or str(row['id']) in ids:
+                    raise CollectionError(endpoint + ': invalid/duplicate object (inventory changed; retry)')
+                ids.add(str(row['id']))
+                result.append(row)
+            try:
+                total = int(meta['total'])
+            except (KeyError, ValueError, TypeError):
+                raise CollectionError(endpoint + ': invalid pagination total') from None
+            offset += len(rows)
+            if offset >= total:
+                return result
+            if not rows:
+                raise CollectionError(endpoint + ': incomplete pagination')
+        raise CollectionError(endpoint + ': pagination limit exceeded')
+
+def normalize_health(obj):
+    h = obj.get('health')
+    if not isinstance(h, dict):
+        raise CollectionError('health: missing health object')
+    result = pick(h, ['success', 'statusMessage', 'buildVersion', 'date', 'setupNeeded'])
+    fields = {
+        'cpu': ['cpuLoad', 'cpuTotalLoad', 'processorCount', 'systemLoad'],
+        'memory': ['usedMemory', 'maxMemory', 'memoryPercent', 'systemAvailableMemory', 'systemMemory', 'swapPercent'],
+        'threads': ['totalThreads', 'runningWebThreads'],
+        'database': ['usedConnections', 'maxConnections', 'abortedConnections'],
+        'storage': ['used', 'available', 'total', 'percent'],
+        'elastic': [], 'rabbit': [],
+    }
+    for component, keys in fields.items():
+        value = h.get(component)
+        if isinstance(value, dict):
+            result[component] = pick(value, ['success', 'status', 'statusMessage'] + keys)
+    rabbit = h.get('rabbit', {})
+    if isinstance(rabbit, dict) and 'rabbit' in result:
+        for key in ('busyQueues', 'errorQueues'):
+            if isinstance(rabbit.get(key), list):
+                result['rabbit'][key + 'Count'] = len(rabbit[key])
+    return result
+
+def normalize_cloud(z):
+    return {**pick(z, ['id', 'name', 'enabled', 'status', 'statusMessage', 'lastSync', 'lastSyncDuration']),
+            'stats': pick(z.get('stats') or {}, ['usedStorage', 'maxStorage', 'usedMemory', 'maxMemory', 'cpuUsage'])}
+
+def assign_service_items(objects):
+    """Readable service items, with deterministic disambiguation when needed."""
+    names = [str(o.get('name') or ('ID ' + str(o['id']))) for o in objects]
+    for qualifier in (
+        lambda o: str((o.get('zone') or {}).get('name') or ''),
+        lambda o: 'ID ' + str(o['id']),
+        lambda o: 'cloud ID ' + str((o.get('zone') or {}).get('id', 'unknown')),
+    ):
+        counts = Counter(names)
+        names = [name + (' (' + suffix + ')' if (suffix := qualifier(o)) else '')
+                 if counts[name] > 1 else name for name, o in zip(names, objects)]
+    if len(names) != len(set(names)):
+        raise CollectionError('Cannot create unique infrastructure service names')
+    for name, obj in zip(names, objects):
+        obj['service_item'] = name
+
+def normalize_vm(v):
+    result = pick(v, ['id', 'name', 'hostname', 'status', 'statusMessage', 'powerState', 'guestAgentStatus', 'lastAgentUpdate', 'maxCores', 'maxMemory', 'maxStorage', 'maintenanceMode'])
+    for relation in ('zone', 'parentServer'):
+        result[relation] = pick(v.get(relation) or {}, ['id', 'name'])
+    result['stats'] = pick(v.get('stats') or {}, ['ts', 'usedMemory', 'maxMemory', 'usedStorage', 'maxStorage', 'cpuUsage', 'readIOPS', 'writeIOPS'])
+    return result
+
+
+def normalize_volumes(v):
+    volumes = []
+    for value in v.get('volumes') or []:
+        if not isinstance(value, dict):
+            continue
+        volume_type = value.get('type') if isinstance(value.get('type'), dict) else {}
+        kind = str(value.get('diskType') or '') + ' ' + str(value.get('imageType') or '') + ' ' + str(volume_type.get('code') or '')
+        if (value.get('id') is None or value.get('removable') is True or
+                any(word in kind.lower() for word in ('cdrom', 'cd-rom', 'dvd', 'iso')) or
+                not numeric(value.get('maxStorage')) or value['maxStorage'] <= 0):
+            continue
+        volume = pick(value, ['id', 'name', 'deviceName', 'status', 'online', 'active', 'readOnly', 'maxStorage', 'usedStorage', 'rootVolume'])
+        volume['name'] = str(value.get('deviceName') or value.get('name') or ('ID ' + str(value['id'])))
+        volumes.append(volume)
+    assign_service_items(volumes)
+    return volumes
+
+
+def unpaged(api, endpoint, key, **query):
+    payload = api.get(endpoint, **query)
+    values = payload.get(key)
+    if not isinstance(values, list) or any(not isinstance(v, dict) or v.get('id') is None for v in values):
+        raise CollectionError(endpoint + ': missing or invalid ' + key + ' array')
+    if len(values) > 10000 or len({str(v['id']) for v in values}) != len(values):
+        raise CollectionError(endpoint + ': excessive or duplicate objects')
+    if isinstance(payload.get('meta'), dict):
+        total = payload['meta'].get('total')
+        if not numeric(total) or total != len(values):
+            raise CollectionError(endpoint + ': incomplete non-paginated response')
+    return values
+
+
+def collect_extensions(api, vms, infrastructure, features):
+    """Opt-in endpoints; failures never erase the mandatory VM inventory."""
+    result = {'features': features, 'errors': [], 'virtual_switches': []}
+    def optional(endpoint, action):
+        try:
+            return {'success': True, 'data': action()}
+        except CollectionError as exc:
+            result['errors'].append(str(exc))
+            return {'success': False, 'error': str(exc)}
+        except (TypeError, ValueError, KeyError, AttributeError):
+            message = endpoint + ': unexpected optional API schema'
+            result['errors'].append(message)
+            return {'success': False, 'error': message}
+    if features.get('snapshots'):
+        for index, vm in enumerate(vms):
+            endpoint = 'servers/' + str(vm['id']) + '/snapshots'
+            if index >= 100:
+                vm['snapshots'] = {'success': False, 'error': 'Snapshot collection limited to 100 VMs per run'}
+                if index == 100: result['errors'].append('Snapshot collection limited to 100 VMs per run')
+                continue
+            vm['snapshots'] = optional(endpoint, lambda endpoint=endpoint: [pick(x, ['id', 'name', 'status', 'state', 'snapshotCreated', 'dateCreated', 'maxStorage', 'forBackup']) for x in unpaged(api, endpoint, 'snapshots')])
+    if features.get('license'):
+        def license_data():
+            raw = api.get('license')
+            fields = ['startDate', 'endDate', 'productTier', 'limitType', 'maxMvmSockets']
+            return {'license': pick(raw.get('license') or {}, fields),
+                'installed': [pick(x, fields) for x in (raw.get('installedLicenses') or []) if isinstance(x, dict)],
+                'limits': [pick(x, ['code', 'max', 'used', 'warning', 'limitReached']) for x in (raw.get('licenseLimits') or []) if isinstance(x, dict)]}
+        result['license'] = optional('license', license_data)
+    if features.get('alarms'):
+        result['alarms'] = optional('health/alarms', lambda: [pick(x, ['id', 'name', 'status', 'category', 'active', 'acknowledged', 'endDate', 'refType', 'refId']) for x in api.listing('health/alarms', 'alarms')])
+        for vm in vms:
+            dataset = result['alarms']
+            vm['alarms'] = {'success': dataset['success']}
+            if dataset['success']:
+                vm['alarms']['data'] = [a for a in dataset['data'] if str(a.get('refType') or '').lower() in ('computeserver', 'server') and str(a.get('refId')) == str(vm['id'])]
+            else:
+                vm['alarms']['error'] = dataset['error']
+    if features.get('virtual_switches'):
+        if not infrastructure.get('clusters'):
+            result['errors'].append('Virtual switch collection requires visible clusters and infrastructure collection')
+        for cluster in infrastructure.get('clusters', []):
+            listing = optional('virtual-switches', lambda cluster=cluster: unpaged(api, 'virtual-switches', 'virtualSwitches', clusterId=cluster['id']))
+            if not listing['success']: continue
+            for value in listing['data']:
+                item = pick(value, ['id', 'name', 'status', 'active', 'baseType', 'bondMode', 'mtu'])
+                item['cluster'] = pick(cluster, ['id', 'name'])
+                item['name'] = str(cluster.get('name') or cluster['id']) + ' / ' + str(value.get('name') or value['id'])
+                endpoint = 'virtual-switches/' + str(value['id']) + '/uplinks'
+                item['uplinks'] = optional(endpoint, lambda endpoint=endpoint: [pick(x, ['id', 'serverId', 'serverName', 'serverStatus', 'nic1', 'nic2', 'syncStatus', 'lastSyncDate']) for x in unpaged(api, endpoint, 'uplinks')])
+                for uplink in item['uplinks'].get('data', []):
+                    uplink['name'] = item['name'] + ' / ' + str(uplink.get('serverName') or uplink.get('serverId'))
+                    host = next((h for h in infrastructure.get('hypervisors', []) if str(h['id']) == str(uplink.get('serverId'))), {})
+                    uplink['host'] = pick(host, ['powerState', 'status', 'serverGroupMemberStatus'])
+                assign_service_items(item['uplinks'].get('data', []))
+                result['virtual_switches'].append(item)
+        assign_service_items(result['virtual_switches'])
+    return result
+
+def vm_stats_score(stats):
+    """Count usable metric groups without assuming CPU is capped at 100%."""
+    if not isinstance(stats, dict):
+        return 0
+    score = int(numeric(stats.get('cpuUsage')) and stats['cpuUsage'] >= 0)
+    for suffix in ('Memory', 'Storage'):
+        used, total = stats.get('used' + suffix), stats.get('max' + suffix)
+        score += int(numeric(used) and numeric(total) and used >= 0 and total > 0)
+    return score
+
+def complete_vm_stats(api, vms):
+    """Try a bounded detail lookup, retaining each metric's own source/time."""
+    attempts = 0
+    for vm in vms:
+        vm['stats_source'] = 'list'
+        vm['metric_snapshots'] = vm_samples(vm.get('stats', {}), 'list')
+        if vm.get('powerState') != 'on' or all(k in vm['metric_snapshots'] for k in ('CPU', 'Memory', 'Storage')):
+            continue
+        # Leave time for the mandatory result and infrastructure collection.
+        remaining = getattr(api, 'deadline', float('inf')) - time.monotonic()
+        if attempts >= 10 or remaining < getattr(api, 'timeout', 20) + 10:
+            vm['stats_detail_status'] = 'lookup skipped (collection budget)'
+            continue
+        attempts += 1
+        try:
+            detail = api.get('servers/' + str(vm['id'])).get('server')
+            if not isinstance(detail, dict) or str(detail.get('id')) != str(vm['id']):
+                vm['stats_detail_status'] = 'invalid detail identity'
+                continue
+            stats = normalize_vm(detail)['stats']
+            timestamp = datetime.fromisoformat(str(stats.get('ts', '')).replace('Z', '+00:00'))
+            if timestamp.tzinfo is None or timestamp.timestamp() > time.time() + 300:
+                raise ValueError('missing timezone or future timestamp')
+            detail_samples = vm_samples(stats, 'detail')
+            selected = False
+            for group, sample in detail_samples.items():
+                current = vm['metric_snapshots'].get(group)
+                if current is None or sample_time(sample) >= sample_time(current):
+                    vm['metric_snapshots'][group] = sample
+                    selected = True
+            if vm_stats_score(stats) > vm_stats_score(vm['stats']):
+                # Replace the entire snapshot, including its original timestamp.
+                vm['stats'] = stats
+                vm['stats_source'] = 'detail'
+                vm['stats_detail_status'] = 'more complete snapshot selected'
+            else:
+                vm['stats_detail_status'] = 'valid metric samples selected' if selected else 'no more complete snapshot'
+        except CollectionError:
+            vm['stats_detail_status'] = 'detail request failed'
+        except (ValueError, TypeError):
+            vm['stats_detail_status'] = 'invalid detail timestamp'
+
+def host_name(vm, mode, prefix):
+    if mode == 'id':
+        raw = str(vm['id'])
+    else:
+        raw = str(vm.get(mode) or vm.get('name') or vm['id'])
+    name = prefix + raw
+    if not re.fullmatch(r'[A-Za-z0-9_][A-Za-z0-9_.-]*', name):
+        raise CollectionError('Invalid piggyback host name; use ID mode or configure name mapping')
+    return name
+
+class HardwareCache:
+    """Private last-valid readings, scoped to site + appliance + credentials."""
+    def __init__(self, directory):
+        self.directory = Path(directory)
+
+    def path(self, server_id):
+        value = str(server_id)
+        if not value.isdecimal():
+            raise ValueError('Invalid server ID')
+        return self.directory / (value + '.json')
+
+    def valid(self, data):
+        return valid_sensor_snapshot(data)
+
+    def read(self, server_id):
+        try:
+            with self.path(server_id).open(encoding='utf-8') as f:
+                data = json.loads(f.read(2 * 1024 * 1024))
+            if self.valid(data):
+                return data
+        except (OSError, ValueError, TypeError):
+            pass
+        return None
+
+    def write(self, server_id, data):
+        if not self.valid(data):
+            return
+        temporary = None
+        try:
+            self.directory.mkdir(parents=True, exist_ok=True, mode=0o700)
+            target = self.path(server_id)
+            with tempfile.NamedTemporaryFile(mode='w', encoding='utf-8', dir=self.directory, delete=False) as f:
+                temporary = f.name
+                json.dump(data, f, ensure_ascii=True)
+            os.replace(temporary, target)
+        except (OSError, ValueError):
+            pass
+        finally:
+            if temporary:
+                try: os.unlink(temporary)
+                except FileNotFoundError: pass
+                except OSError: pass
+
+
+VM_STATS_FIELDS = ('ts', 'usedMemory', 'maxMemory', 'usedStorage', 'maxStorage', 'cpuUsage', 'readIOPS', 'writeIOPS')
+VM_CAPACITY_FIELDS = ('maxCores', 'maxMemory', 'maxStorage')
+VM_METRIC_GROUPS = {
+    'CPU': ('cpuUsage',),
+    'Memory': ('usedMemory', 'maxMemory'),
+    'Storage': ('usedStorage', 'maxStorage'),
+    'Disk IO': ('readIOPS', 'writeIOPS'),
+}
+
+
+def valid_metric_stats(stats, group):
+    if not isinstance(stats, dict) or set(stats) - {'ts', *VM_METRIC_GROUPS[group]}:
+        return False
+    try:
+        timestamp = datetime.fromisoformat(stats['ts'].replace('Z', '+00:00'))
+        if timestamp.tzinfo is None or timestamp.timestamp() > time.time() + 300:
+            return False
+    except (KeyError, AttributeError, ValueError, TypeError, OverflowError):
+        return False
+    if not all(numeric(stats.get(k)) and stats[k] >= 0 for k in VM_METRIC_GROUPS[group]):
+        return False
+    if group in ('Memory', 'Storage') and stats['max' + group] <= 0:
+        return False
+    return group != 'Memory' or stats['usedMemory'] <= stats['maxMemory']
+
+
+def vm_samples(stats, source):
+    samples = {}
+    for group, fields in VM_METRIC_GROUPS.items():
+        selected = pick(stats, ('ts', *fields))
+        if valid_metric_stats(selected, group):
+            samples[group] = {'stats': selected, 'source': source}
+    return samples
+
+
+def sample_time(sample):
+    return datetime.fromisoformat(sample['stats']['ts'].replace('Z', '+00:00'))
+
+def valid_vm_snapshot(data):
+    if not isinstance(data, dict) or not isinstance(data.get('capacity'), dict):
+        return False
+    stats = data.get('stats')
+    if vm_stats_score(stats) != 3 or set(stats) - set(VM_STATS_FIELDS):
+        return False
+    # RAM usage cannot exceed the capacity of a valid complete sample.
+    if stats['usedMemory'] > stats['maxMemory']:
+        return False
+    if set(data['capacity']) - set(VM_CAPACITY_FIELDS):
+        return False
+    try:
+        timestamp = datetime.fromisoformat(stats['ts'].replace('Z', '+00:00'))
+        if timestamp.tzinfo is None or timestamp.timestamp() > time.time() + 300:
+            return False
+    except (KeyError, AttributeError, ValueError, TypeError, OverflowError):
+        return False
+    return True
+
+class VMStatsCache(HardwareCache):
+    def valid(self, data):
+        if isinstance(data, dict) and data.get('schema') == 2:
+            groups = data.get('groups')
+            capacity = data.get('capacity')
+            return (isinstance(capacity, dict) and not set(capacity) - set(VM_CAPACITY_FIELDS)
+                    and isinstance(groups, dict) and bool(groups)
+                    and not set(groups) - set(VM_METRIC_GROUPS)
+                    and all(valid_metric_stats(stats, group) for group, stats in groups.items()))
+        return valid_vm_snapshot(data)  # Read existing 1.0.4 caches during upgrade.
+
+def retain_vm_stats(api, vms):
+    """Retain independent groups; never borrow another group's timestamp."""
+    cache = getattr(api, 'vm_stats_cache', None)
+    for vm in vms:
+        samples = vm.setdefault('metric_snapshots', vm_samples(vm.get('stats', {}), vm.get('stats_source', 'list')))
+        if vm.get('powerState') != 'on':
+            # A new power-on must establish its own baseline.
+            if cache is not None:
+                try:
+                    cache.path(vm['id']).unlink(missing_ok=True)
+                except (OSError, ValueError):
+                    pass
+            continue
+        capacity = pick(vm, VM_CAPACITY_FIELDS)
+        previous = cache.read(vm['id']) if cache is not None else None
+        if previous is not None and previous['capacity'] == capacity:
+            groups = previous.get('groups') if previous.get('schema') == 2 else {
+                group: sample['stats'] for group, sample in vm_samples(previous['stats'], 'cache').items()}
+            for group, stats in groups.items():
+                old = {'stats': stats, 'source': 'cache'}
+                current = samples.get(group)
+                if current is None or sample_time(old) > sample_time(current):
+                    samples[group] = old
+        if samples and cache is not None:
+            cache.write(vm['id'], {'schema': 2, 'capacity': capacity,
+                                  'groups': {group: sample['stats'] for group, sample in samples.items()}})
+        sources = {sample['source'] for sample in samples.values()}
+        if sources:
+            vm['stats_source'] = next(iter(sources)) if len(sources) == 1 else 'mixed'
+
+
+def valid_sensor_snapshot(data):
+    if not isinstance(data, dict) or not isinstance(data.get('sensors'), list) or not data['sensors']:
+        return False
+    try:
+        timestamp = datetime.fromisoformat(data['timestamp'].replace('Z', '+00:00'))
+        if timestamp.tzinfo is None:
+            return False
+    except (KeyError, AttributeError, ValueError, TypeError):
+        return False
+    return all(isinstance(x, dict) and isinstance(x.get('name'), str) and isinstance(x.get('status'), str) for x in data['sensors'])
+
+
+def sensor_snapshot(h):
+    stats = h.get('stats') or {}
+    sensors = stats.get('sensors')
+    if not isinstance(sensors, list):
+        return None
+    data = {'timestamp': stats.get('ts'), 'sensors': [pick(x, ['name', 'status', 'reading']) for x in sensors if isinstance(x, dict)]}
+    return data if valid_sensor_snapshot(data) else None
+
+
+def resolve_hardware(api, h):
+    snapshot, source = sensor_snapshot(h), 'list'
+    if snapshot is None:
+        try:
+            detail = api.get('servers/' + str(h['id'])).get('server')
+            if isinstance(detail, dict) and str(detail.get('id')) == str(h['id']):
+                snapshot = sensor_snapshot(detail)
+                source = 'detail'
+        except CollectionError:
+            pass
+    cache = getattr(api, 'hardware_cache', None)
+    if snapshot is not None:
+        if cache is not None: cache.write(h['id'], snapshot)
+    elif cache is not None:
+        snapshot, source = cache.read(h['id']), 'cache'
+    return snapshot, source
+
+
+def normalize_hypervisor(h, hardware_details=False, snapshot=None, hardware_source=None):
+    result = normalize_vm(h)
+    result.update(pick(h, ['serverGroupMemberStatus', 'maxSockets', 'platform', 'platformVersion']))
+    if snapshot is None:
+        snapshot = sensor_snapshot(h)
+    sensors = snapshot['sensors'] if snapshot else []
+    result['hardware_timestamp'] = snapshot['timestamp'] if snapshot else None
+    result['hardware_source'] = hardware_source or 'list'
+    result['hardware_summary'] = {
+        'count': len(sensors),
+        'unavailable': sum(str(x.get('status')).lower() == 'ns' for x in sensors),
+        'problems': [x for x in sensors if str(x.get('status')).lower() not in ('ok', 'ns')],
+    }
+    result['sensors'] = [x for x in sensors if str(x.get('status')).lower() != 'ns'] if hardware_details else []
+    return result
+
+
+def normalize_cluster(c):
+    result = pick(c, ['id', 'name', 'status', 'statusMessage', 'lastSync', 'enabled'])
+    result['zone'] = pick(c.get('zone') or {}, ['id', 'name'])
+    result['members'] = [pick(x, ['id', 'name', 'serverGroupMemberStatus']) for x in c.get('servers', [])]
+    result['stats'] = pick(c.get('workerStats') or {}, ['usedMemory', 'maxMemory', 'reservedMemory', 'hostReservedMemory', 'cpuUsageAvg'])
+    no_ha = (c.get('config') or {}).get('notHighAvailability')
+    if isinstance(no_ha, bool):
+        result['ha_enabled'] = not no_ha
+    return result
+
+
+def normalize_datastore(ds, zone, cluster, capacity_map):
+    result = pick(ds, ['id', 'name', 'storageSize', 'freeSpace', 'online', 'active', 'status', 'statusMessage', 'maintenanceStatus', 'allowRead', 'allowWrite', 'allowProvision'])
+    result['zone'] = pick(zone, ['id', 'name'])
+    result['cluster'] = pick(cluster or {}, ['id', 'name'])
+    result['sync_timestamp'] = (cluster or {}).get('lastSync') or zone.get('lastSync')
+    result['capacity_source'] = 'datastore.storageSize'
+    if not numeric(result.get('storageSize')) or result['storageSize'] <= 0:
+        values = capacity_map.get((str(zone['id']), str(ds['id'])), set())
+        if len(values) == 1:
+            result['storageSize'] = next(iter(values))
+            result['capacity_source'] = 'hypervisor.volume.maxStorage'
+        else:
+            result['storageSize'] = None
+            result['capacity_source'] = 'missing or conflicting'
+    result['multipath'] = pick(ds.get('config') or {}, ['multipathPaths', 'multipathActive', 'multipathFailed', 'multipathState'])
+    result['locations'] = [pick(x, ['refType', 'refId', 'status', 'statusMessage']) for x in ds.get('locations', [])]
+    return result
+
+
+def collect_infrastructure(api, clouds, zone_id=None, hardware_details=False):
+    result = {'clusters': [], 'hypervisors': [], 'datastores': [], 'errors': []}
+    def listing(endpoint, key, **filters):
+        try:
+            return api.listing(endpoint, key, **filters)
+        except CollectionError as exc:
+            result['errors'].append(str(exc))
+            return []
+    filters = {'zoneId': zone_id} if zone_id else {}
+    allowed = {str(z['id']) for z in clouds}
+    raw_hv = listing('servers', 'servers', vmHypervisor='true', **filters)
+    raw_hv = [h for h in raw_hv if str((h.get('zone') or {}).get('id')) in allowed]
+    for h in raw_hv:
+        snapshot, source = resolve_hardware(api, h)
+        result['hypervisors'].append(normalize_hypervisor(h, hardware_details, snapshot, source))
+    raw_clusters = listing('clusters', 'clusters', **filters)
+    allowed = {str(z['id']) for z in clouds}
+    raw_clusters = [c for c in raw_clusters if str((c.get('zone') or {}).get('id')) in allowed]
+    result['clusters'] = [normalize_cluster(c) for c in raw_clusters]
+    capacities = {}
+    for h in raw_hv:
+        for v in h.get('volumes', []):
+            ds_id = v.get('datastoreId') or (v.get('datastore') or {}).get('id')
+            size = v.get('maxStorage')
+            if ds_id is not None and numeric(size) and size > 0:
+                capacities.setdefault((str((h.get('zone') or {}).get('id')), str(ds_id)), set()).add(size)
+    stores = {}
+    for z in clouds:
+        for ds in listing('zones/' + str(z['id']) + '/data-stores', 'datastores'):
+            stores[(str(z['id']), str(ds['id']))] = normalize_datastore(ds, z, None, capacities)
+    for c in raw_clusters:
+        z = next(z for z in clouds if str(z['id']) == str(c['zone']['id']))
+        for ds in listing('clusters/' + str(c['id']) + '/datastores', 'datastores'):
+            key = (str(z['id']), str(ds['id']))
+            normalized = normalize_datastore(ds, z, c, capacities)
+            # Prefer the richer cluster response; publish a shared datastore only once.
+            if key not in stores or not stores[key].get('cluster'):
+                stores[key] = normalized
+    result['datastores'] = list(stores.values())
+    for key in ('clusters', 'hypervisors', 'datastores'):
+        assign_service_items(result[key])
+    return result
+
+
+def collect(api, zone_id=None, name_mode='id', prefix='morpheus-vm-', source_host='', skip_infrastructure=False, hardware_details=False, features=None):
+    health = normalize_health(api.get('health'))
+    filters = {'zoneId': zone_id} if zone_id else {}
+    # All endpoint calls must succeed before emitting ANY piggyback inventory.
+    clouds = [normalize_cloud(z) for z in api.listing('zones', 'zones') if not zone_id or int(z['id']) == zone_id]
+    if zone_id and not clouds:
+        raise CollectionError('Selected cloud ID not visible to API account')
+    assign_service_items(clouds)
+    raw_vms = api.listing('servers', 'servers', vm='true', **filters)
+    vms = [normalize_vm(v) for v in raw_vms]
+    if features and features.get('volumes'):
+        for raw, vm in zip(raw_vms, vms):
+            vm['volumes'] = normalize_volumes(raw)
+    names = set()
+    for vm in vms:
+        vm['piggyback_name'] = host_name(vm, name_mode, prefix)
+        if vm['piggyback_name'] in names or vm['piggyback_name'] == source_host:
+            raise CollectionError('Piggyback name collision; use unique ID mode')
+        names.add(vm['piggyback_name'])
+    complete_vm_stats(api, vms)
+    retain_vm_stats(api, vms)
+    infrastructure = {} if skip_infrastructure else collect_infrastructure(api, clouds, zone_id, hardware_details)
+    extensions = collect_extensions(api, vms, infrastructure, features) if features and any(features.values()) else {}
+    return {'health': health, 'clouds': clouds, 'vms': vms, 'infrastructure': infrastructure, 'extensions': extensions, 'collected_at': time.time(), 'zone_id': zone_id}
+
+def section(name, value):
+    return '<<<' + name + ':sep(0)>>>\n' + json.dumps(value, ensure_ascii=True, separators=(',', ':')) + '\n'
+
+def render(data, duration):
+    out = section('morpheus_api', {'success': True, 'version': VERSION, 'vm_count': len(data['vms']), 'cloud_count': len(data['clouds']), 'duration': duration})
+    out += section('morpheus_platform', data['health'])
+    out += section('morpheus_clouds', data['clouds'])
+    if data.get('infrastructure'):
+        out += section('morpheus_infrastructure', data['infrastructure'])
+    if data.get('extensions'):
+        out += section('morpheus_extended', data['extensions'])
+    inventory = []
+    for vm in data['vms']:
+        entry = pick(vm, ['id', 'name', 'powerState', 'zone', 'parentServer'])
+        snapshots = vm.get('snapshots', {})
+        if snapshots.get('success') is True:
+            entry['snapshot_count'] = len(snapshots['data'])
+        inventory.append(entry)
+    out += section('morpheus_vm_inventory', {
+        'zone_id': data.get('zone_id'),
+        'snapshots_enabled': data.get('extensions', {}).get('features', {}).get('snapshots', False),
+        'vms': inventory,
+    })
+    for vm in data['vms']:
+        out += '<<<<' + vm['piggyback_name'] + '>>>>\n'
+        out += section('morpheus_vm', vm)
+        out += '<<<<>>>>\n'
+    return out
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--url', required=True)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--token')
+    group.add_argument('--token-file')
+    parser.add_argument('--insecure', action='store_true')
+    parser.add_argument('--skip-infrastructure', action='store_true')
+    parser.add_argument('--hardware-details', action='store_true')
+    for feature in ('snapshots', 'volumes', 'virtual-switches', 'alarms', 'license'):
+        parser.add_argument('--collect-' + feature, action='store_true')
+    parser.add_argument('--timeout', type=int, default=20)
+    parser.add_argument('--zone-id', type=int)
+    parser.add_argument('--name-mode', choices=['id', 'name', 'hostname'], default='id')
+    parser.add_argument('--prefix', default='morpheus-vm-')
+    parser.add_argument('--source-host', default='')
+    args = parser.parse_args()
+    started = time.monotonic()
+    try:
+        if args.timeout < 1:
+            raise CollectionError('Timeout must be positive')
+        if args.token_file:
+            with open(args.token_file, encoding='utf-8') as f:
+                token = f.read(8192).strip()
+        else:
+            token = args.token
+        # Where installed, suppress credentials from the process title early.
+        try:
+            import setproctitle
+            setproctitle.setproctitle('agent_morpheus')
+        except ImportError:
+            pass
+        features = {name: getattr(args, 'collect_' + name) for name in ('snapshots', 'volumes', 'virtual_switches', 'alarms', 'license')}
+        data = collect(API(args.url, token, args.insecure, args.timeout), args.zone_id, args.name_mode, args.prefix, args.source_host, args.skip_infrastructure, args.hardware_details, features)
+        print(render(data, time.monotonic() - started), end='')
+    except (CollectionError, OSError) as exc:
+        # No raw response bodies, credentials or traceback on normal failures.
+        message = str(exc) if isinstance(exc, CollectionError) else 'Cannot read token file'
+        print(section('morpheus_api', {'success': False, 'message': message}), end='')
+        print('Morpheus collection failed: ' + message, file=sys.stderr)
+        return 1
+    except Exception:
+        print(section('morpheus_api', {'success': False, 'message': 'Unexpected API schema or collector error'}), end='')
+        print('Morpheus collector error; check API schema', file=sys.stderr)
+        return 1
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())

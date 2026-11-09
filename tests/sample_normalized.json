@@ -1,0 +1,112 @@
+{
+  "health": {
+    "success": true,
+    "statusMessage": "",
+    "buildVersion": "9.1.0.1",
+    "date": "2026-10-29T08:16:38Z",
+    "setupNeeded": false,
+    "cpu": {
+      "success": true,
+      "status": "ok",
+      "cpuLoad": 1.3876734591823978,
+      "cpuTotalLoad": 74.63432929116141,
+      "processorCount": 4,
+      "systemLoad": 4.6572265625
+    },
+    "memory": {
+      "success": true,
+      "status": "ok",
+      "usedMemory": 3186043296,
+      "maxMemory": 4169138176,
+      "memoryPercent": 0.7641970982,
+      "systemAvailableMemory": 5774852096,
+      "systemMemory": 16674799616,
+      "swapPercent": 0.3579581813413442
+    },
+    "threads": {
+      "success": true,
+      "status": "ok",
+      "totalThreads": 390,
+      "runningWebThreads": 0
+    },
+    "database": {
+      "success": true,
+      "status": "ok",
+      "usedConnections": 7,
+      "maxConnections": 200,
+      "abortedConnections": 7720
+    },
+    "storage": {
+      "success": true,
+      "status": "ok",
+      "used": 18461229056,
+      "available": 81240522752,
+      "total": 99701751808,
+      "percent": 18.51645405
+    },
+    "elastic": {
+      "success": true,
+      "status": "ok",
+      "statusMessage": "elasitc is runnig on a single node with indicies configured for replication"
+    },
+    "rabbit": {
+      "success": true,
+      "status": "ok",
+      "busyQueuesCount": 0,
+      "errorQueuesCount": 0
+    }
+  },
+  "vms": [
+    {
+      "id": 27,
+      "name": "ExampleVM",
+      "hostname": "examplevm",
+      "status": "provisioned",
+      "statusMessage": null,
+      "powerState": "on",
+      "guestAgentStatus": "connected",
+      "maxCores": 4,
+      "maxMemory": 25769803776,
+      "maxStorage": 257698037760,
+      "maintenanceMode": false,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "parentServer": {
+        "id": 1,
+        "name": "HYPERVISOR1"
+      },
+      "stats": {
+        "ts": "2026-10-29T08:16:57Z",
+        "usedMemory": 513308000,
+        "maxMemory": 25769803776,
+        "usedStorage": 2093887488,
+        "maxStorage": 257698037760,
+        "cpuUsage": 0.19170642,
+        "readIOPS": 0,
+        "writeIOPS": 0
+      },
+      "piggyback_name": "morpheus-vm-27"
+    }
+  ],
+  "clouds": [
+    {
+      "id": 1,
+      "name": "Example-HVM",
+      "enabled": true,
+      "status": "ok",
+      "statusMessage": null,
+      "lastSync": "2026-10-29T08:12:28.125Z",
+      "lastSyncDuration": 52,
+      "stats": {
+        "usedStorage": 779230044160,
+        "maxStorage": 50885967216640,
+        "usedMemory": 18138800000,
+        "maxMemory": 614548520960,
+        "cpuUsage": 9.709439167752862
+      }
+    }
+  ],
+  "collected_at": 0
+}

@@ -1,0 +1,27 @@
+..............................................................................................................................
+----------------------------------------------------------------------
+Ran 126 tests in 0.083s
+
+OK
+Public agent API: 15 sample services evaluated successfully
+Public agent API: CPU above 100% accepted without clipping or normalization
+Public rules API: rule_spec_morpheus_platform form constructed
+Public rules API: rule_spec_morpheus_clouds form constructed
+Public rules API: rule_spec_morpheus_vm form constructed
+Public rules API: rule_spec_morpheus_vm_power form constructed
+Public rules API: rule_spec_morpheus_vm_metrics form constructed
+Public rules API: rule_spec_morpheus_datastore_usage form constructed
+Public rules API: rule_spec_morpheus_multipath form constructed
+Public rules API: rule_spec_morpheus_infra_metrics form constructed
+Public rules API: rule_spec_morpheus_cluster_state form constructed
+Public rules API: rule_spec_morpheus_hardware form constructed
+Public rules API: rule_spec_morpheus_snapshots form constructed
+Public rules API: rule_spec_morpheus_license form constructed
+Public rules API: rule_spec_morpheus form constructed
+Public server-side calls API: configuration loaded
+Infrastructure API: 475 sample services evaluated, including 35 without detailed sensors
+Extended API: 13 snapshot/volume/license/alarm/switch/uplink sample services evaluated
+Public graphing API: metrics and graphs constructed
+Graphing coverage: 59 named metrics, 40 primary graphs, 13 perfometers; age auxiliary; MiB-to-byte conversion checked
+Check default parameter keys match all rule forms
+Public API regressions: unclean/power-unknown host, cluster failure, per-metric sources and disk IOPS passed

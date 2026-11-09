@@ -1,0 +1,2462 @@
+{
+  "clusters": [
+    {
+      "id": 1,
+      "name": "HVM-CLUSTER1",
+      "status": "ok",
+      "statusMessage": null,
+      "lastSync": "2026-10-29T09:02:19.155Z",
+      "enabled": true,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "members": [
+        {
+          "id": 1,
+          "name": "HYPERVISOR1",
+          "serverGroupMemberStatus": "online"
+        },
+        {
+          "id": 2,
+          "name": "HYPERVISOR2",
+          "serverGroupMemberStatus": "online"
+        }
+      ],
+      "stats": {
+        "usedMemory": 5849928000,
+        "maxMemory": 530796658688,
+        "reservedMemory": 77309411328,
+        "hostReservedMemory": 8589934592,
+        "cpuUsageAvg": 4.5745462
+      },
+      "ha_enabled": false
+    }
+  ],
+  "hypervisors": [
+    {
+      "id": 5,
+      "name": "esxi1.example.com",
+      "hostname": "localhost",
+      "status": "provisioned",
+      "statusMessage": null,
+      "powerState": "on",
+      "guestAgentStatus": "unknown",
+      "maxCores": 8,
+      "maxMemory": 206013894656,
+      "maxStorage": 15403900207104,
+      "maintenanceMode": false,
+      "zone": {
+        "id": 2,
+        "name": "Example-VMware"
+      },
+      "parentServer": {},
+      "stats": {
+        "ts": "2026-10-29T08:58:00Z",
+        "usedMemory": 39429603328,
+        "maxMemory": 206013894656,
+        "usedStorage": 12723562741760,
+        "maxStorage": 15403900207104,
+        "cpuUsage": 67.57983719
+      },
+      "serverGroupMemberStatus": null,
+      "maxSockets": 1,
+      "platform": "ESXi",
+      "platformVersion": "8.0.3",
+      "hardware_summary": {
+        "count": 0,
+        "unavailable": 0,
+        "problems": []
+      },
+      "sensors": []
+    },
+    {
+      "id": 4,
+      "name": "esxi2.example.com",
+      "hostname": "localhost",
+      "status": "provisioned",
+      "statusMessage": null,
+      "powerState": "on",
+      "guestAgentStatus": "unknown",
+      "maxCores": 8,
+      "maxMemory": 206007578624,
+      "maxStorage": 15403900207104,
+      "maintenanceMode": false,
+      "zone": {
+        "id": 2,
+        "name": "Example-VMware"
+      },
+      "parentServer": {},
+      "stats": {
+        "ts": "2026-10-29T08:58:00Z",
+        "usedMemory": 126358650880,
+        "maxMemory": 206007578624,
+        "usedStorage": 12723574276096,
+        "maxStorage": 15403900207104,
+        "cpuUsage": 18.32341891
+      },
+      "serverGroupMemberStatus": null,
+      "maxSockets": 1,
+      "platform": "ESXi",
+      "platformVersion": "8.0.3",
+      "hardware_summary": {
+        "count": 0,
+        "unavailable": 0,
+        "problems": []
+      },
+      "sensors": []
+    },
+    {
+      "id": 1,
+      "name": "HYPERVISOR1",
+      "hostname": "hypervisor1.example.com",
+      "status": "provisioned",
+      "statusMessage": "Host has been fenced (startup)",
+      "powerState": "on",
+      "guestAgentStatus": "unknown",
+      "maxCores": 32,
+      "maxMemory": 265398329344,
+      "maxStorage": 25029593006080,
+      "maintenanceMode": false,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "parentServer": {},
+      "stats": {
+        "ts": "2026-10-29T09:01:54Z",
+        "usedMemory": 25769803776,
+        "maxMemory": 265398329344,
+        "usedStorage": 266507169792,
+        "maxStorage": 25029593006080,
+        "cpuUsage": 3.5291731,
+        "readIOPS": 0,
+        "writeIOPS": 2
+      },
+      "serverGroupMemberStatus": "online",
+      "maxSockets": 1,
+      "platform": "ubuntu",
+      "platformVersion": "26.04",
+      "hardware_summary": {
+        "count": 240,
+        "unavailable": 20,
+        "problems": []
+      },
+      "sensors": [
+        {
+          "name": "CPUs",
+          "status": "ok"
+        },
+        {
+          "name": "All CPUs",
+          "status": "ok"
+        },
+        {
+          "name": "One of CPUs",
+          "status": "ok"
+        },
+        {
+          "name": "CPU 1 Status",
+          "status": "ok",
+          "reading": "Presence detected"
+        },
+        {
+          "name": "RoT Mismatch",
+          "status": "ok"
+        },
+        {
+          "name": "Sys Boot Status",
+          "status": "ok"
+        },
+        {
+          "name": "Host Power",
+          "status": "ok"
+        },
+        {
+          "name": "IPMI Watchdog",
+          "status": "ok"
+        },
+        {
+          "name": "SEL Fullness",
+          "status": "ok"
+        },
+        {
+          "name": "All DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "One of DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "Backup Memory",
+          "status": "ok"
+        },
+        {
+          "name": "Lane Failover",
+          "status": "ok"
+        },
+        {
+          "name": "Memory Resized",
+          "status": "ok"
+        },
+        {
+          "name": "Non-Auth DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "SMI Lane Failed",
+          "status": "ok"
+        },
+        {
+          "name": "NMI State",
+          "status": "ok"
+        },
+        {
+          "name": "SysCfg Mismatch",
+          "status": "ok"
+        },
+        {
+          "name": "PCIs",
+          "status": "ok"
+        },
+        {
+          "name": "All PCI Error",
+          "status": "ok"
+        },
+        {
+          "name": "One of PCIs",
+          "status": "ok"
+        },
+        {
+          "name": "No I/O Resources",
+          "status": "ok"
+        },
+        {
+          "name": "Aux Log",
+          "status": "ok"
+        },
+        {
+          "name": "Firmware Error",
+          "status": "ok"
+        },
+        {
+          "name": "GPT Status",
+          "status": "ok"
+        },
+        {
+          "name": "No Boot Device",
+          "status": "ok"
+        },
+        {
+          "name": "No Op ROM Space",
+          "status": "ok"
+        },
+        {
+          "name": "UEFI Auth Fail",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "Sec Rollback Err",
+          "status": "ok"
+        },
+        {
+          "name": "Secure Boot Err",
+          "status": "ok"
+        },
+        {
+          "name": "TPM_TCM Init Err",
+          "status": "ok"
+        },
+        {
+          "name": "TPM_TCM Lock",
+          "status": "ok"
+        },
+        {
+          "name": "TXT ACM Module",
+          "status": "ok"
+        },
+        {
+          "name": "3 Strike Timeout",
+          "status": "ok"
+        },
+        {
+          "name": "Drive Key Fault",
+          "status": "ok"
+        },
+        {
+          "name": "XCC Switchover",
+          "status": "ok"
+        },
+        {
+          "name": "XCC FW Corrupted",
+          "status": "ok"
+        },
+        {
+          "name": "Low Security Jmp",
+          "status": "ok",
+          "reading": "Device Absent"
+        },
+        {
+          "name": "XCC DB Status",
+          "status": "ok"
+        },
+        {
+          "name": "SMM Mode",
+          "status": "ok"
+        },
+        {
+          "name": "SMM Monitor",
+          "status": "ok"
+        },
+        {
+          "name": "DIMMs Disabled",
+          "status": "ok"
+        },
+        {
+          "name": "SMI Timeout",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Log",
+          "status": "ok"
+        },
+        {
+          "name": "RoT Attestation",
+          "status": "ok"
+        },
+        {
+          "name": "NCSI Link State",
+          "status": "ok"
+        },
+        {
+          "name": "Ambient Temp",
+          "status": "ok",
+          "reading": "23 degrees C"
+        },
+        {
+          "name": "Exhaust Temp",
+          "status": "ok",
+          "reading": "48 degrees C"
+        },
+        {
+          "name": "System Air Flow",
+          "status": "ok",
+          "reading": "11 CFM"
+        },
+        {
+          "name": "CPU 1 Temp",
+          "status": "ok",
+          "reading": "38 degrees C"
+        },
+        {
+          "name": "CPU ExtLink 1 Er",
+          "status": "ok"
+        },
+        {
+          "name": "CPU ExtLink 2 Er",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 1",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 2",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 2 Temp",
+          "status": "ok",
+          "reading": "32 degrees C"
+        },
+        {
+          "name": "DIMM 3",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 4",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 4 Temp",
+          "status": "ok",
+          "reading": "34 degrees C"
+        },
+        {
+          "name": "DIMM 5",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 5 Temp",
+          "status": "ok",
+          "reading": "34 degrees C"
+        },
+        {
+          "name": "DIMM 6",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 6 Temp",
+          "status": "ok",
+          "reading": "35 degrees C"
+        },
+        {
+          "name": "DIMM 7",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 7 Temp",
+          "status": "ok",
+          "reading": "34 degrees C"
+        },
+        {
+          "name": "DIMM 8",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 8 Temp",
+          "status": "ok",
+          "reading": "34 degrees C"
+        },
+        {
+          "name": "DIMM 9",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 9 Temp",
+          "status": "ok",
+          "reading": "33 degrees C"
+        },
+        {
+          "name": "DIMM 10",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 11",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 11 Temp",
+          "status": "ok",
+          "reading": "30 degrees C"
+        },
+        {
+          "name": "DIMM 12",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 13",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 14",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 15",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 16",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 17",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 18",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 19",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 20",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 21",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 22",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 23",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 24",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 1 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 2 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 3 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 4 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 5 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 6 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 7 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 8 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 9 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 10 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 11 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 12 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 13 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 14 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 15 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 16 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 17 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 18 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 19 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 20 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 21 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 22 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 23 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 24 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CMOS Battery",
+          "status": "ok",
+          "reading": "3.12 Volts"
+        },
+        {
+          "name": "SysBrd 12V",
+          "status": "ok",
+          "reading": "12.15 Volts"
+        },
+        {
+          "name": "SysBrd 5V",
+          "status": "ok",
+          "reading": "4.96 Volts"
+        },
+        {
+          "name": "SysBrd 3.3V",
+          "status": "ok",
+          "reading": "3.26 Volts"
+        },
+        {
+          "name": "SysBrd Vol Fault",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM PMIC NO VR",
+          "status": "ok"
+        },
+        {
+          "name": "CPU1 PVDD18 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDD18 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDD33 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDD33 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P12V Efuse A PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P12V Efuse B PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P12V Efuse C PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P5V BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P5V HDD1 BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P1V2 BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P3V3 BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDD11",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDD11",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "NIC OCP PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDIO",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDIO",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDCR SOC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDCR SOC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDCR VR 1",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDCR VR 2",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDCR VR 1",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDCR VR 2",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDIO FLT",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDIO FLT",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 7/8 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 9/10 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 11/12 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 5/6 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 3/4 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 1/2 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 19/20 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 21/22 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 23/24 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 17/18 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 15/16 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 13/14 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "Fan Mismatch",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "Fan 1 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 2 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 3 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 4 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 5 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 6 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 7 Front Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Fan 8 Front Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Fan 1 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 2 Rear Tach",
+          "status": "ok",
+          "reading": "5400 RPM"
+        },
+        {
+          "name": "Fan 3 Rear Tach",
+          "status": "ok",
+          "reading": "5400 RPM"
+        },
+        {
+          "name": "Fan 4 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 5 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 6 Rear Tach",
+          "status": "ok",
+          "reading": "5400 RPM"
+        },
+        {
+          "name": "Fan 7 Rear Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Fan 8 Rear Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Sys Power",
+          "status": "ok",
+          "reading": "160 Watts"
+        },
+        {
+          "name": "CPU Power",
+          "status": "ok",
+          "reading": "48 Watts"
+        },
+        {
+          "name": "Mem Power",
+          "status": "ok",
+          "reading": "4 Watts"
+        },
+        {
+          "name": "Sys Fan Pwr",
+          "status": "ok",
+          "reading": "10 Watts"
+        },
+        {
+          "name": "CPU Utilization",
+          "status": "ok",
+          "reading": "1 percent"
+        },
+        {
+          "name": "Mem Utilization",
+          "status": "ok",
+          "reading": "0 percent"
+        },
+        {
+          "name": "PSU Mismatch",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PS Heavy Load",
+          "status": "ok",
+          "reading": "State Deasserted"
+        },
+        {
+          "name": "Power Resource",
+          "status": "ok"
+        },
+        {
+          "name": "PSU 1",
+          "status": "ok",
+          "reading": "Presence detected"
+        },
+        {
+          "name": "PSU 1 Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 I2C DC fai",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 PF Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 IN Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 AC In Pwr",
+          "status": "ok",
+          "reading": "80 Watts"
+        },
+        {
+          "name": "PSU 1 DC Out Pwr",
+          "status": "ok",
+          "reading": "64 Watts"
+        },
+        {
+          "name": "PSU 2",
+          "status": "ok",
+          "reading": "Presence detected"
+        },
+        {
+          "name": "PSU 2 Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 I2C DC fai",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 PF Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 IN Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 AC In Pwr",
+          "status": "ok",
+          "reading": "72 Watts"
+        },
+        {
+          "name": "PSU 2 DC Out Pwr",
+          "status": "ok",
+          "reading": "56 Watts"
+        },
+        {
+          "name": "PCIe Riser 1",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "PCIe Riser 2",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe Riser 3",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe Riser 4",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe 1",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "PCIe 1 OverTemp",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PCIe 2",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe 2 OverTemp",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "OCP",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "OCP OverTemp",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "RAID Card 1",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Card 2",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Card 3",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Card 4",
+          "status": "ok"
+        },
+        {
+          "name": "BP 1 Status",
+          "status": "ok"
+        },
+        {
+          "name": "Rear BP Status",
+          "status": "ok"
+        },
+        {
+          "name": "Front Panel",
+          "status": "ok",
+          "reading": "Present"
+        },
+        {
+          "name": "TPM Module Prsnt",
+          "status": "ok"
+        },
+        {
+          "name": "COMport Card",
+          "status": "ok"
+        },
+        {
+          "name": "Front Video",
+          "status": "ok"
+        },
+        {
+          "name": "Ext Drive",
+          "status": "ok"
+        },
+        {
+          "name": "Ext Enclosure PS",
+          "status": "ok"
+        },
+        {
+          "name": "Drive Mismatch",
+          "status": "ok"
+        },
+        {
+          "name": "SSD wear level",
+          "status": "ok"
+        },
+        {
+          "name": "M2 Adapter",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "M2 Drive 0",
+          "status": "ok",
+          "reading": "Drive Present"
+        },
+        {
+          "name": "M2 Drive 0 Stat",
+          "status": "ok"
+        },
+        {
+          "name": "M2 Drive 1",
+          "status": "ok",
+          "reading": "Drive Present"
+        },
+        {
+          "name": "M2 Drive 1 Stat",
+          "status": "ok"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "HYPERVISOR2",
+      "hostname": "hypervisor2.example.com",
+      "status": "provisioned",
+      "statusMessage": "Host left DLM cleanly (unknown)",
+      "powerState": "on",
+      "guestAgentStatus": "unknown",
+      "maxCores": 32,
+      "maxMemory": 265398329344,
+      "maxStorage": 25029593006080,
+      "maintenanceMode": false,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "parentServer": {},
+      "stats": {
+        "ts": "2026-10-29T09:01:51Z",
+        "usedMemory": 51539607552,
+        "maxMemory": 265398329344,
+        "usedStorage": 270197301248,
+        "maxStorage": 25029593006080,
+        "cpuUsage": 5.6199193,
+        "readIOPS": 0,
+        "writeIOPS": 29
+      },
+      "serverGroupMemberStatus": "online",
+      "maxSockets": 1,
+      "platform": "ubuntu",
+      "platformVersion": "26.04",
+      "hardware_summary": {
+        "count": 240,
+        "unavailable": 20,
+        "problems": []
+      },
+      "sensors": [
+        {
+          "name": "CPUs",
+          "status": "ok"
+        },
+        {
+          "name": "All CPUs",
+          "status": "ok"
+        },
+        {
+          "name": "One of CPUs",
+          "status": "ok"
+        },
+        {
+          "name": "CPU 1 Status",
+          "status": "ok",
+          "reading": "Presence detected"
+        },
+        {
+          "name": "RoT Mismatch",
+          "status": "ok"
+        },
+        {
+          "name": "Sys Boot Status",
+          "status": "ok"
+        },
+        {
+          "name": "Host Power",
+          "status": "ok"
+        },
+        {
+          "name": "IPMI Watchdog",
+          "status": "ok"
+        },
+        {
+          "name": "SEL Fullness",
+          "status": "ok"
+        },
+        {
+          "name": "All DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "One of DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "Backup Memory",
+          "status": "ok"
+        },
+        {
+          "name": "Lane Failover",
+          "status": "ok"
+        },
+        {
+          "name": "Memory Resized",
+          "status": "ok"
+        },
+        {
+          "name": "Non-Auth DIMMs",
+          "status": "ok"
+        },
+        {
+          "name": "SMI Lane Failed",
+          "status": "ok"
+        },
+        {
+          "name": "NMI State",
+          "status": "ok"
+        },
+        {
+          "name": "SysCfg Mismatch",
+          "status": "ok"
+        },
+        {
+          "name": "PCIs",
+          "status": "ok"
+        },
+        {
+          "name": "All PCI Error",
+          "status": "ok"
+        },
+        {
+          "name": "One of PCIs",
+          "status": "ok"
+        },
+        {
+          "name": "No I/O Resources",
+          "status": "ok"
+        },
+        {
+          "name": "Aux Log",
+          "status": "ok"
+        },
+        {
+          "name": "Firmware Error",
+          "status": "ok"
+        },
+        {
+          "name": "GPT Status",
+          "status": "ok"
+        },
+        {
+          "name": "No Boot Device",
+          "status": "ok"
+        },
+        {
+          "name": "No Op ROM Space",
+          "status": "ok"
+        },
+        {
+          "name": "UEFI Auth Fail",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "Sec Rollback Err",
+          "status": "ok"
+        },
+        {
+          "name": "Secure Boot Err",
+          "status": "ok"
+        },
+        {
+          "name": "TPM_TCM Init Err",
+          "status": "ok"
+        },
+        {
+          "name": "TPM_TCM Lock",
+          "status": "ok"
+        },
+        {
+          "name": "TXT ACM Module",
+          "status": "ok"
+        },
+        {
+          "name": "3 Strike Timeout",
+          "status": "ok"
+        },
+        {
+          "name": "Drive Key Fault",
+          "status": "ok"
+        },
+        {
+          "name": "XCC Switchover",
+          "status": "ok"
+        },
+        {
+          "name": "XCC FW Corrupted",
+          "status": "ok"
+        },
+        {
+          "name": "Low Security Jmp",
+          "status": "ok",
+          "reading": "Device Absent"
+        },
+        {
+          "name": "XCC DB Status",
+          "status": "ok"
+        },
+        {
+          "name": "SMM Mode",
+          "status": "ok"
+        },
+        {
+          "name": "SMM Monitor",
+          "status": "ok"
+        },
+        {
+          "name": "DIMMs Disabled",
+          "status": "ok"
+        },
+        {
+          "name": "SMI Timeout",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Log",
+          "status": "ok"
+        },
+        {
+          "name": "RoT Attestation",
+          "status": "ok"
+        },
+        {
+          "name": "NCSI Link State",
+          "status": "ok"
+        },
+        {
+          "name": "Ambient Temp",
+          "status": "ok",
+          "reading": "23 degrees C"
+        },
+        {
+          "name": "Exhaust Temp",
+          "status": "ok",
+          "reading": "48 degrees C"
+        },
+        {
+          "name": "System Air Flow",
+          "status": "ok",
+          "reading": "11 CFM"
+        },
+        {
+          "name": "CPU 1 Temp",
+          "status": "ok",
+          "reading": "37 degrees C"
+        },
+        {
+          "name": "CPU ExtLink 1 Er",
+          "status": "ok"
+        },
+        {
+          "name": "CPU ExtLink 2 Er",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 1",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 2",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 2 Temp",
+          "status": "ok",
+          "reading": "33 degrees C"
+        },
+        {
+          "name": "DIMM 3",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 4",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 4 Temp",
+          "status": "ok",
+          "reading": "35 degrees C"
+        },
+        {
+          "name": "DIMM 5",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 5 Temp",
+          "status": "ok",
+          "reading": "36 degrees C"
+        },
+        {
+          "name": "DIMM 6",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 6 Temp",
+          "status": "ok",
+          "reading": "36 degrees C"
+        },
+        {
+          "name": "DIMM 7",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 7 Temp",
+          "status": "ok",
+          "reading": "34 degrees C"
+        },
+        {
+          "name": "DIMM 8",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 8 Temp",
+          "status": "ok",
+          "reading": "35 degrees C"
+        },
+        {
+          "name": "DIMM 9",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 9 Temp",
+          "status": "ok",
+          "reading": "34 degrees C"
+        },
+        {
+          "name": "DIMM 10",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 11",
+          "status": "ok",
+          "reading": "Presence Detected"
+        },
+        {
+          "name": "DIMM 11 Temp",
+          "status": "ok",
+          "reading": "32 degrees C"
+        },
+        {
+          "name": "DIMM 12",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 13",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 14",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 15",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 16",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 17",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 18",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 19",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 20",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 21",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 22",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 23",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 24",
+          "status": "ok"
+        },
+        {
+          "name": "DIMM 1 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 2 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 3 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 4 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 5 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 6 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 7 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 8 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 9 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 10 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 11 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 12 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 13 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 14 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 15 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 16 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 17 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 18 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 19 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 20 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 21 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 22 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 23 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 24 PMIC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CMOS Battery",
+          "status": "ok",
+          "reading": "3.12 Volts"
+        },
+        {
+          "name": "SysBrd 12V",
+          "status": "ok",
+          "reading": "12.21 Volts"
+        },
+        {
+          "name": "SysBrd 5V",
+          "status": "ok",
+          "reading": "4.96 Volts"
+        },
+        {
+          "name": "SysBrd 3.3V",
+          "status": "ok",
+          "reading": "3.26 Volts"
+        },
+        {
+          "name": "SysBrd Vol Fault",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM PMIC NO VR",
+          "status": "ok"
+        },
+        {
+          "name": "CPU1 PVDD18 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDD18 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDD33 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDD33 AUX",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P12V Efuse A PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P12V Efuse B PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P12V Efuse C PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P5V BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P5V HDD1 BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P1V2 BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "P3V3 BUF",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDD11",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDD11",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "NIC OCP PG",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDIO",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDIO",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDCR SOC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDCR SOC",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDCR VR 1",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDCR VR 2",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDCR VR 1",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDCR VR 2",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU1 PVDDIO FLT",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "CPU2 PVDDIO FLT",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 7/8 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 9/10 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 11/12 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 5/6 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 3/4 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 1/2 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 19/20 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 21/22 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 23/24 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 17/18 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 15/16 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "DIMM 13/14 PMICs",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "Fan Mismatch",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "Fan 1 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 2 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 3 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 4 Front Tach",
+          "status": "ok",
+          "reading": "5520 RPM"
+        },
+        {
+          "name": "Fan 5 Front Tach",
+          "status": "ok",
+          "reading": "5428 RPM"
+        },
+        {
+          "name": "Fan 6 Front Tach",
+          "status": "ok",
+          "reading": "5612 RPM"
+        },
+        {
+          "name": "Fan 7 Front Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Fan 8 Front Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Fan 1 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 2 Rear Tach",
+          "status": "ok",
+          "reading": "5400 RPM"
+        },
+        {
+          "name": "Fan 3 Rear Tach",
+          "status": "ok",
+          "reading": "5400 RPM"
+        },
+        {
+          "name": "Fan 4 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 5 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 6 Rear Tach",
+          "status": "ok",
+          "reading": "5500 RPM"
+        },
+        {
+          "name": "Fan 7 Rear Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Fan 8 Rear Tach",
+          "status": "ok",
+          "reading": "0 RPM"
+        },
+        {
+          "name": "Sys Power",
+          "status": "ok",
+          "reading": "160 Watts"
+        },
+        {
+          "name": "CPU Power",
+          "status": "ok",
+          "reading": "40 Watts"
+        },
+        {
+          "name": "Mem Power",
+          "status": "ok",
+          "reading": "4 Watts"
+        },
+        {
+          "name": "Sys Fan Pwr",
+          "status": "ok",
+          "reading": "10 Watts"
+        },
+        {
+          "name": "CPU Utilization",
+          "status": "ok",
+          "reading": "5 percent"
+        },
+        {
+          "name": "Mem Utilization",
+          "status": "ok",
+          "reading": "0 percent"
+        },
+        {
+          "name": "PSU Mismatch",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PS Heavy Load",
+          "status": "ok",
+          "reading": "State Deasserted"
+        },
+        {
+          "name": "Power Resource",
+          "status": "ok"
+        },
+        {
+          "name": "PSU 1",
+          "status": "ok",
+          "reading": "Presence detected"
+        },
+        {
+          "name": "PSU 1 Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 I2C DC fai",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 PF Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 IN Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 1 AC In Pwr",
+          "status": "ok",
+          "reading": "72 Watts"
+        },
+        {
+          "name": "PSU 1 DC Out Pwr",
+          "status": "ok",
+          "reading": "56 Watts"
+        },
+        {
+          "name": "PSU 2",
+          "status": "ok",
+          "reading": "Presence detected"
+        },
+        {
+          "name": "PSU 2 Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 I2C DC fai",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 PF Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 IN Failure",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PSU 2 AC In Pwr",
+          "status": "ok",
+          "reading": "88 Watts"
+        },
+        {
+          "name": "PSU 2 DC Out Pwr",
+          "status": "ok",
+          "reading": "64 Watts"
+        },
+        {
+          "name": "PCIe Riser 1",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "PCIe Riser 2",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe Riser 3",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe Riser 4",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe 1",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "PCIe 1 OverTemp",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "PCIe 2",
+          "status": "ok"
+        },
+        {
+          "name": "PCIe 2 OverTemp",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "OCP",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "OCP OverTemp",
+          "status": "ok",
+          "reading": "Transition to OK"
+        },
+        {
+          "name": "RAID Card 1",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Card 2",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Card 3",
+          "status": "ok"
+        },
+        {
+          "name": "RAID Card 4",
+          "status": "ok"
+        },
+        {
+          "name": "BP 1 Status",
+          "status": "ok"
+        },
+        {
+          "name": "Rear BP Status",
+          "status": "ok"
+        },
+        {
+          "name": "Front Panel",
+          "status": "ok",
+          "reading": "Present"
+        },
+        {
+          "name": "TPM Module Prsnt",
+          "status": "ok"
+        },
+        {
+          "name": "COMport Card",
+          "status": "ok"
+        },
+        {
+          "name": "Front Video",
+          "status": "ok"
+        },
+        {
+          "name": "Ext Drive",
+          "status": "ok"
+        },
+        {
+          "name": "Ext Enclosure PS",
+          "status": "ok"
+        },
+        {
+          "name": "Drive Mismatch",
+          "status": "ok"
+        },
+        {
+          "name": "SSD wear level",
+          "status": "ok"
+        },
+        {
+          "name": "M2 Adapter",
+          "status": "ok",
+          "reading": "Device Installed"
+        },
+        {
+          "name": "M2 Drive 0",
+          "status": "ok",
+          "reading": "Drive Present"
+        },
+        {
+          "name": "M2 Drive 0 Stat",
+          "status": "ok"
+        },
+        {
+          "name": "M2 Drive 1",
+          "status": "ok",
+          "reading": "Drive Present"
+        },
+        {
+          "name": "M2 Drive 1 Stat",
+          "status": "ok"
+        }
+      ]
+    }
+  ],
+  "datastores": [
+    {
+      "id": 5,
+      "name": "datastore1",
+      "freeSpace": 226274312192,
+      "online": true,
+      "active": true,
+      "zone": {
+        "id": 2,
+        "name": "Example-VMware"
+      },
+      "cluster": {},
+      "sync_timestamp": "2026-10-29T08:58:00Z",
+      "capacity_source": "hypervisor.volume.maxStorage",
+      "storageSize": 230854492160,
+      "multipath": {},
+      "locations": [],
+      "item": "datastore1 [5]"
+    },
+    {
+      "id": 4,
+      "name": "datastore1 (1)",
+      "freeSpace": 226262777856,
+      "online": true,
+      "active": true,
+      "zone": {
+        "id": 2,
+        "name": "Example-VMware"
+      },
+      "cluster": {},
+      "sync_timestamp": "2026-10-29T08:58:00Z",
+      "capacity_source": "hypervisor.volume.maxStorage",
+      "storageSize": 230854492160,
+      "multipath": {},
+      "locations": [],
+      "item": "datastore1 (1) [4]"
+    },
+    {
+      "id": 6,
+      "name": "SharedVMwareDatastore",
+      "freeSpace": 2454063153152,
+      "online": true,
+      "active": true,
+      "zone": {
+        "id": 2,
+        "name": "Example-VMware"
+      },
+      "cluster": {},
+      "sync_timestamp": "2026-10-29T08:58:00Z",
+      "capacity_source": "hypervisor.volume.maxStorage",
+      "storageSize": 15173045714944,
+      "multipath": {},
+      "locations": [],
+      "item": "SharedVMwareDatastore [6]"
+    },
+    {
+      "id": 7,
+      "name": "BackupDatastore",
+      "freeSpace": 0,
+      "online": false,
+      "active": true,
+      "zone": {
+        "id": 2,
+        "name": "Example-VMware"
+      },
+      "cluster": {},
+      "sync_timestamp": "2026-10-29T08:58:00Z",
+      "capacity_source": "missing or conflicting",
+      "storageSize": null,
+      "multipath": {},
+      "locations": [],
+      "item": "BackupDatastore [7]"
+    },
+    {
+      "id": 8,
+      "name": "HVM_DATASTORE01",
+      "storageSize": 12274182881280,
+      "freeSpace": 12021607321600,
+      "online": true,
+      "active": true,
+      "status": "provisioned",
+      "statusMessage": null,
+      "maintenanceStatus": "available",
+      "allowRead": true,
+      "allowWrite": true,
+      "allowProvision": true,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "cluster": {
+        "id": 1,
+        "name": "HVM-CLUSTER1"
+      },
+      "sync_timestamp": "2026-10-29T09:02:19.155Z",
+      "capacity_source": "datastore.storageSize",
+      "multipath": {
+        "multipathPaths": 2,
+        "multipathActive": 2,
+        "multipathFailed": 0,
+        "multipathState": "active"
+      },
+      "locations": [
+        {
+          "refType": "ComputeServer",
+          "refId": 1,
+          "status": "provisioned",
+          "statusMessage": null
+        },
+        {
+          "refType": "ComputeServer",
+          "refId": 2,
+          "status": "provisioned",
+          "statusMessage": null
+        }
+      ],
+      "item": "HVM_DATASTORE01 [8]"
+    },
+    {
+      "id": 1,
+      "name": "local",
+      "storageSize": 469771632640,
+      "freeSpace": 452156211200,
+      "online": true,
+      "active": true,
+      "status": "provisioned",
+      "statusMessage": null,
+      "maintenanceStatus": "available",
+      "allowRead": true,
+      "allowWrite": true,
+      "allowProvision": true,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "cluster": {
+        "id": 1,
+        "name": "HVM-CLUSTER1"
+      },
+      "sync_timestamp": "2026-10-29T09:02:19.155Z",
+      "capacity_source": "datastore.storageSize",
+      "multipath": {},
+      "locations": [
+        {
+          "refType": "ComputeServer",
+          "refId": 1,
+          "status": "provisioned",
+          "statusMessage": null
+        },
+        {
+          "refType": "ComputeServer",
+          "refId": 2,
+          "status": "provisioned",
+          "statusMessage": null
+        }
+      ],
+      "item": "local [1]"
+    },
+    {
+      "id": 2,
+      "name": "morpheus-cloud-init",
+      "storageSize": 469771632640,
+      "freeSpace": 452156203008,
+      "online": true,
+      "active": true,
+      "status": "provisioned",
+      "statusMessage": null,
+      "maintenanceStatus": "available",
+      "allowRead": true,
+      "allowWrite": true,
+      "allowProvision": false,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "cluster": {
+        "id": 1,
+        "name": "HVM-CLUSTER1"
+      },
+      "sync_timestamp": "2026-10-29T09:02:19.155Z",
+      "capacity_source": "datastore.storageSize",
+      "multipath": {},
+      "locations": [
+        {
+          "refType": "ComputeServer",
+          "refId": 1,
+          "status": "provisioned",
+          "statusMessage": null
+        },
+        {
+          "refType": "ComputeServer",
+          "refId": 2,
+          "status": "provisioned",
+          "statusMessage": null
+        }
+      ],
+      "item": "morpheus-cloud-init [2]"
+    },
+    {
+      "id": 3,
+      "name": "morpheus-images",
+      "storageSize": 469771632640,
+      "freeSpace": 452156203008,
+      "online": true,
+      "active": true,
+      "status": "provisioned",
+      "statusMessage": null,
+      "maintenanceStatus": "available",
+      "allowRead": true,
+      "allowWrite": true,
+      "allowProvision": false,
+      "zone": {
+        "id": 1,
+        "name": "Example-HVM"
+      },
+      "cluster": {
+        "id": 1,
+        "name": "HVM-CLUSTER1"
+      },
+      "sync_timestamp": "2026-10-29T09:02:19.155Z",
+      "capacity_source": "datastore.storageSize",
+      "multipath": {},
+      "locations": [
+        {
+          "refType": "ComputeServer",
+          "refId": 2,
+          "status": "provisioned",
+          "statusMessage": null
+        },
+        {
+          "refType": "ComputeServer",
+          "refId": 1,
+          "status": "provisioned",
+          "statusMessage": null
+        }
+      ],
+      "item": "morpheus-images [3]"
+    }
+  ],
+  "errors": []
+}

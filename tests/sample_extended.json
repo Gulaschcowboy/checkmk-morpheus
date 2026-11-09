@@ -1,0 +1,33 @@
+{
+  "inventory": {
+    "snapshots_enabled": true,
+    "zone_id": 1,
+    "vms": [
+      {"id": 3, "name": "ExampleVM", "powerState": "on", "snapshot_count": 2},
+      {"id": 4, "name": "ExampleOffVM", "powerState": "off", "snapshot_count": 0}
+    ]
+  },
+  "extensions": {
+    "features": {"snapshots": true, "volumes": true, "license": true, "alarms": true, "virtual_switches": true},
+    "errors": [],
+    "license": {
+      "success": true,
+      "data": {
+        "license": {"endDate": "2030-01-01T00:00:00Z"},
+        "installed": [{"endDate": "2030-01-01T00:00:00Z"}],
+        "limits": [{"code": "maxMvmSockets", "max": 2, "used": 2, "warning": true, "limitReached": true}, {"code": "maxHosts", "max": null, "used": 2}]
+      }
+    },
+    "alarms": {"success": true, "data": [{"id": 1, "name": "Example guest agent warning", "status": "warning", "refType": "computeServer", "refId": 3}]},
+    "virtual_switches": [{
+      "id": 1, "name": "ExampleCluster / vs0", "status": "available", "active": true, "bondMode": "802.3ad", "mtu": 1500,
+      "uplinks": {"success": true, "data": [{"id": 1, "name": "ExampleCluster / vs0 / Host1", "serverId": 1, "nic1": "eth0", "nic2": "eth1", "syncStatus": "in-sync", "lastSyncDate": "2026-10-01T00:00:00Z", "host": {"powerState": "on", "serverGroupMemberStatus": "online"}}]}
+    }]
+  },
+  "vm": {
+    "id": 3, "name": "ExampleVM", "powerState": "on",
+    "snapshots": {"success": true, "data": []},
+    "alarms": {"success": true, "data": [{"id": 1, "name": "Example guest agent warning", "status": "warning", "refType": "computeServer", "refId": 3}]},
+    "volumes": [{"id": 1, "name": "/dev/vda", "deviceName": "/dev/vda", "status": "provisioned", "online": true, "maxStorage": 107374182400, "usedStorage": 44506705920}]
+  }
+}
